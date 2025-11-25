@@ -35,7 +35,7 @@ void client::handle_recv(){
             break;
         }
         std::string mess(buffer,bytes_received);
-        std::thread(&client::print_message,this,mess).detach();
+       print_message(mess);
     }
 }
 void client::connect_to_server(int port)
@@ -43,7 +43,7 @@ void client::connect_to_server(int port)
     sockaddr_in server_addr{};
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
-    inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+    inet_pton(AF_INET, "192.168.1.2", &server_addr.sin_addr);
     if (connect(sd_, (sockaddr *)&server_addr, sizeof(server_addr)) < 0)
     {
         perror("connect failed");
