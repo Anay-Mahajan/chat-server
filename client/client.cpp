@@ -8,7 +8,8 @@
 #include<thread>
 #include<mutex>
 void client::send_message(std::string message){
-    std::string final_msg = message; 
+    std::string final_msg = message;
+    if(final_msg.back()!='\n')  final_msg+='\n'; 
      send(sd_, final_msg.c_str(), final_msg.length(), 0);
 }
 void client::handle_send(){
@@ -35,7 +36,11 @@ void client::handle_recv(){
             break;
         }
         std::string mess(buffer,bytes_received);
-       print_message(mess);
+        std::string final="";
+        for(int i=0;i<mess.size()-1;i++){
+            final+=mess[i];
+        }
+       print_message(final);
     }
 }
 void client::connect_to_server(int port)

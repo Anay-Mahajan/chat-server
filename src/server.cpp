@@ -4,14 +4,13 @@
 #include <sys/types.h>
 #include <netdb.h>
 #include <unistd.h>
-#include <string>
 #include <cstring>
 #include <iostream>
-#include <string>
 #include <thread>
 #include <mutex>
 #include <csignal>
 #include <vector>
+std::atomic<int> server::count = 0;
 namespace server
 {
   void start(int port)
@@ -160,7 +159,6 @@ namespace server
   void handle_route(int sd, std::string message)
   {
     int i = 1;
-    ;
     std::string route = "";
     while (i < message.size() && message[i] != ' ')
     {
@@ -204,6 +202,7 @@ namespace server
         if (it == username_to_sd.end())
         {
           logMessage("Could Not find " + route);
+
           return;
         }
         target_sd = it->second;
@@ -224,6 +223,7 @@ namespace server
       if (bytes_received <= 0)
       {
         std::unique_lock<std::shared_mutex>lock(closed_mutex);
+        logMessage("closed connection"+std::to_string(client_sd));
         closed_connection.insert(client_sd);
         break;
       }
