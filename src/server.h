@@ -4,9 +4,10 @@
 #include<shared_mutex>
 #include<string>
 #include<set>
+#include<atomic>
 namespace server {
     static int sd_;
-    static int count=0;
+    extern std::atomic<int> count;
     static std::shared_mutex mp_mutex;
     static std::shared_mutex closed_mutex;
     static std::set<int>closed_connection;
