@@ -3,7 +3,7 @@ import threading
 import time
 import random
 
-SERVER_IP = "192.168.1.2"
+SERVER_IP = "3.109.206.199"
 SERVER_PORT = 8080
 
 NUM_CLIENTS = 1000

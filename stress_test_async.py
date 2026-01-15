@@ -5,7 +5,7 @@ import random
 import statistics
 
 # --- Configuration defaults ---
-DEFAULT_IP = "127.0.0.1"
+DEFAULT_IP = "3.109.206.199"
 DEFAULT_PORT = 8080
 DEFAULT_CLIENTS = 1000
 DEFAULT_MSGS = 10
