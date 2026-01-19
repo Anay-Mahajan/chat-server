@@ -5,124 +5,104 @@
 </head>
 <body>
 
-<h1>Multithreaded TCP Chat Server (C++)</h1>
+<h1>High-Performance TCP Chat Server</h1>
 
 <p>
-A <strong>multithreaded TCP chat server</strong> implemented in <strong>C++</strong> using
-<strong>POSIX sockets</strong>, designed to handle <strong>1,000+ concurrent clients</strong>
-with correct message framing, thread-safe routing, and backpressure-aware behavior.
-</p>
-
-<p>
-This project focuses on <strong>networking fundamentals, concurrency, and systems-level correctness</strong>,
-rather than UI or product features.
+A multithreaded TCP-based chat server implemented in C++ to explore
+low-level networking, concurrency, and real-world backend system behavior
+under load.
 </p>
 
 <hr>
 
 <h2>Features</h2>
 <ul>
-  <li>Persistent TCP connections (thread-per-client model)</li>
-  <li>Custom newline-delimited text protocol</li>
-  <li>User registration, broadcast, and direct messaging</li>
-  <li>Thread-safe connection and message management</li>
-  <li>Correct handling of TCP stream semantics (partial reads, coalesced packets)</li>
-  <li>Graceful handling of disconnects and slow clients</li>
+  <li>Supports 1,000+ concurrent TCP clients</li>
+  <li>Broadcast and direct (1:1) messaging</li>
+  <li>Custom text-based protocol over raw TCP</li>
+  <li>Correct handling of TCP stream framing and partial reads</li>
+  <li>Thread-safe shared state using mutexes and reader-writer locks</li>
+  <li>Deployed on AWS EC2 behind an Nginx TCP (stream) reverse proxy</li>
+  <li>Per-IP connection limiting enforced at the Nginx gateway</li>
 </ul>
 
 <hr>
 
 <h2>Architecture</h2>
-
 <pre>
-Clients (CLI)
-    |
-TCP Connections
-    |
-Multithreaded C++ Server
-    |
-Thread-safe Message Routing
+Clients
+   |
+   |  TCP
+   v
+Nginx (stream proxy, connection limits)
+   |
+   |  TCP (localhost)
+   v
+C++ Chat Server (thread-per-client)
 </pre>
 
+<hr>
+
+<h2>Stress Testing</h2>
+<p>
+The server was stress-tested using a Python asyncio-based load generator:
+</p>
 <ul>
-  <li>Each client connection is handled by a dedicated thread</li>
-  <li>Shared state protected using <code>std::shared_mutex</code></li>
-  <li>No blocking network I/O while holding exclusive locks</li>
+  <li>1,000 concurrent clients</li>
+  <li>10 messages per client</li>
+  <li>10M+ fan-out messages</li>
+  <li>~265K messages/sec throughput (public internet)</li>
+  <li>~1.3s average latency, ~3.1s P99 latency under burst load</li>
+</ul>
+
+<p>
+Testing revealed real-world system behavior such as TCP backpressure,
+buffer saturation, and connection resets under sustained load.
+</p>
+
+<hr>
+
+<h2>Technologies Used</h2>
+<ul>
+  <li>C++ (POSIX sockets, pthreads)</li>
+  <li>Linux</li>
+  <li>TCP/IP networking</li>
+  <li>Nginx (stream module)</li>
+  <li>AWS EC2</li>
+  <li>Python (asyncio for load testing)</li>
 </ul>
 
 <hr>
 
-<h2>Protocol</h2>
-
-<p>All messages <strong>must end with <code>\n</code></strong>.</p>
-
-<pre>
-@advertize &lt;username&gt;\n
-@all &lt;message&gt;\n
-@&lt;username&gt; &lt;message&gt;\n
-</pre>
-
-<hr>
-
-<h2>Performance (Representative)</h2>
+<h2>What This Project Demonstrates</h2>
 <ul>
-  <li>Tested with ~1,000 concurrent clients</li>
-  <li>Sustained throughput: <strong>~600K–700K messages/sec (fan-out)</strong></li>
-  <li>Average latency: <strong>&lt; 0.5 second</strong></li>
-  <li>P99 latency: <strong>~1.1 seconds</strong></li>
+  <li>Understanding of TCP as a byte-stream protocol</li>
+  <li>Concurrency control and synchronization</li>
+  <li>Reverse proxy configuration for non-HTTP services</li>
+  <li>Realistic load testing and performance analysis</li>
+  <li>Debugging production-like failures</li>
 </ul>
-
-<p><em>Results vary based on hardware and OS settings.</em></p>
-
-<hr>
-
-<h2>Build &amp; Run (CMake)</h2>
-
-<h4>Build</h4>
-<pre>
-mkdir build
-cd build
-cmake ..
-make
-</pre>
-
-<h4>Run Server</h4>
-<pre>
-cd build
-./server
-</pre>
-
-<h4>Run Client</h4>
-<pre>
-cd build
-./client
-</pre>
 
 <hr>
 
 <h2>Limitations</h2>
 <ul>
-  <li>Thread-per-client model limits scalability</li>
-  <li>Blocking I/O under heavy fan-out</li>
-  <li>In-memory only (no persistence)</li>
-  <li>No authentication or TLS</li>
+  <li>No persistence or message durability</li>
+  <li>No authentication or encryption</li>
+  <li>Thread-per-client architecture (not event-driven)</li>
 </ul>
 
 <p>
-These limitations are <strong>intentional</strong> to highlight architectural tradeoffs.
+This project is intended as a learning exercise in systems and backend
+engineering rather than a production-ready chat service.
 </p>
 
 <hr>
 
-<h2>Key Learnings</h2>
-<ul>
-  <li>TCP is a byte stream — explicit message framing is required</li>
-  <li>Backpressure is expected and must be handled</li>
-  <li>Concurrency bugs appear under load, not at small scale</li>
-  <li>Measuring performance is as important as correctness</li>
-</ul>
-
-<hr>
+<h2>Author</h2>
+<p>
+Built by &lt;Anay Mahajan&gt; as a deep dive into networking and backend systems.
+</p>
 
 </body>
 </html>
