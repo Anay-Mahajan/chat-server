@@ -8,6 +8,7 @@
 namespace server {
     static int sd_;
     extern std::atomic<int> count;
+    extern std::atomic<int> count2;
     static std::shared_mutex mp_mutex;
     static std::shared_mutex closed_mutex;
     static std::set<int>closed_connection;

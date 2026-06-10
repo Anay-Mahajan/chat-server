@@ -11,6 +11,7 @@
 #include <csignal>
 #include <vector>
 std::atomic<int> server::count = 0;
+std::atomic<int> server::count2 = 0;
 namespace server
 {
   void start(int port)
@@ -74,7 +75,8 @@ namespace server
         perror("Accept failed");
         continue;
       }
-      logMessage("New connection Accepted");
+      count2++;
+      logMessage("New connection Accepted "+std::to_string(count2));
       std::thread(handle_client, client_sd).detach();
     }
   }
@@ -102,7 +104,7 @@ namespace server
       if (it == sd_to_username.end())
         return;
       from_user = it->second;
-    }
+      }
     std::string data = from_user + "->" + message + "\n";
     if (!safe_send(to_sd, data)){
       count++;
@@ -195,7 +197,6 @@ namespace server
     else
     {
       int target_sd;
-
       {
         std::shared_lock<std::shared_mutex> lock(mp_mutex);
         auto it = username_to_sd.find(route);
